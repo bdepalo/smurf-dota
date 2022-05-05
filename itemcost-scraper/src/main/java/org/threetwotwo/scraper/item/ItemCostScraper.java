@@ -8,6 +8,8 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemCostScraper {
 
@@ -18,6 +20,7 @@ public class ItemCostScraper {
 
             Document doc = Jsoup.connect("https://dota2.fandom.com/wiki/Items").get();
 
+            Elements consumables = doc.select("h3:contains(Consumables) + div.itemlist");
             Elements attributes = doc.select("h3:contains(Attributes) + div.itemlist");
             Elements equipment = doc.select("h3:contains(Equipment) + div.itemlist");
             Elements misc = doc.select("h3:contains(Miscellaneous) + div.itemlist");
@@ -29,19 +32,20 @@ public class ItemCostScraper {
             Elements weapons = doc.select("h3:contains(Weapons) + div.itemlist");
             Elements artifacts = doc.select("h3:contains(Artifacts) + div.itemlist");
 
-            ArrayList<Element> allItems = new ArrayList<>();
-            allItems.addAll(attributes);
-            allItems.addAll(equipment);
-            allItems.addAll(secret);
-            allItems.addAll(accessories);
-            allItems.addAll(support);
-            allItems.addAll(magical);
-            allItems.addAll(armor);
-            allItems.addAll(weapons);
-            allItems.addAll(misc);
-            allItems.addAll(artifacts);
+            ArrayList<Element> allElements = new ArrayList<>();
+            allElements.addAll(consumables);
+            allElements.addAll(attributes);
+            allElements.addAll(equipment);
+            allElements.addAll(secret);
+            allElements.addAll(accessories);
+            allElements.addAll(support);
+            allElements.addAll(magical);
+            allElements.addAll(armor);
+            allElements.addAll(weapons);
+            allElements.addAll(misc);
+            allElements.addAll(artifacts);
 
-            allItems.stream().flatMap(element -> element.children().select("div").stream().map(item -> {
+            List<DotaItem> allItems = allElements.stream().flatMap(element -> element.children().select("div").stream().map(item -> {
                 Element firstLink = item.select("a").first();
                 if (firstLink != null) {
                     String link = firstLink.attr("href");
@@ -53,7 +57,14 @@ public class ItemCostScraper {
                 }
                 return null;
 
-            })).forEach(System.out::println);
+            })).collect(Collectors.toList());
+
+            System.out.println("Possible Starting Items");
+            allItems.stream().filter(x -> x.getCost() < 600).forEach(System.out::println);
+            System.out.println();
+            System.out.println();
+            System.out.println("All Items");
+            allItems.forEach(System.out::println);
 
         } catch (IOException e) {
             System.out.println("FAILURE");

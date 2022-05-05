@@ -41,6 +41,30 @@ public class DotaItem {
         return this;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public List<DotaItem> getComponents() {
+        return components;
+    }
+
+    public List<DotaItem> getBuildsInto() {
+        return buildsInto;
+    }
+
+    public String getImageLink() {
+        return imageLink;
+    }
+
+    public String getItemPageLink() {
+        return itemPageLink;
+    }
+
     @Override
     public String toString() {
         return "DotaItem{" +
