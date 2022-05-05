@@ -41,7 +41,7 @@ public class ItemCostScraper {
             allItems.addAll(misc);
             allItems.addAll(artifacts);
 
-            allItems.stream().flatMap(element -> element.select("div").stream().map(item -> {
+            allItems.stream().flatMap(element -> element.children().select("div").stream().map(item -> {
                 Element firstLink = item.select("a").first();
                 if (firstLink != null) {
                     String link = firstLink.attr("href");
