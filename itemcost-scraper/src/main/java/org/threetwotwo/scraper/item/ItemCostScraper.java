@@ -18,6 +18,7 @@ public class ItemCostScraper {
 
             Document doc = Jsoup.connect("https://dota2.fandom.com/wiki/Items").get();
 
+            Elements attributes = doc.select("h3:contains(Attributes) + div.itemlist");
             Elements equipment = doc.select("h3:contains(Equipment) + div.itemlist");
             Elements misc = doc.select("h3:contains(Miscellaneous) + div.itemlist");
             Elements secret = doc.select("h3:contains(Secret) + div.itemlist");
@@ -29,6 +30,7 @@ public class ItemCostScraper {
             Elements artifacts = doc.select("h3:contains(Artifacts) + div.itemlist");
 
             ArrayList<Element> allItems = new ArrayList<>();
+            allItems.addAll(attributes);
             allItems.addAll(equipment);
             allItems.addAll(secret);
             allItems.addAll(accessories);
