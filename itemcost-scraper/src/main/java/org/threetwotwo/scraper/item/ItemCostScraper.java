@@ -100,6 +100,9 @@ public class ItemCostScraper {
         // get current cost of build
         int currentCost = build.entrySet().stream().mapToInt(itemCountEntry -> itemCountEntry.getValue().intValue() * itemCountEntry.getKey().getCost()).sum();
 
+        if(currentCost > 600)
+            return builds;
+
         // attempt to add an item to the build
         for (DotaItem item : items) {
 
