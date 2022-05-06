@@ -9,6 +9,10 @@ dependencies {
     implementation("org.jsoup:jsoup:1.14.3")
 }
 
+application {
+    mainClass.set("org.threetwotwo.scraper.item.ItemCostScraper")
+}
+
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }

@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -62,28 +63,28 @@ public class ItemCostScraper {
 
             })).collect(Collectors.toList());
 
+
             // filter out items with 0 cost and > 600 cost
             allItems = allItems.stream().filter(x -> x.getCost() <= 600 && x.getCost() > 0).collect(Collectors.toList());
 
             // do the thing
-            List<HashMap<DotaItem, AtomicInteger>> db = from(new HashMap<>(), allItems).stream().distinct().collect(Collectors.toList());
+            List<HashMap<DotaItem, Integer>> db = from(new HashMap<>(), allItems).stream().distinct().collect(Collectors.toList());
 
             // output
             FileWriter writer = new FileWriter("db.csv");
             String topRow = allItems.stream().map(DotaItem::getName).collect(Collectors.joining(","));
-            writer.write(topRow);
-
-            for (HashMap<DotaItem, AtomicInteger> build : db) {
-                String line = allItems.stream().map(item -> build.getOrDefault(item, new AtomicInteger(0)).toString()).collect(Collectors.joining(","));
+            writer.write(topRow + "\n");
+            for (HashMap<DotaItem, Integer> build : db) {
+                String line = allItems.stream().map(item -> build.getOrDefault(item, 0).toString()).collect(Collectors.joining(","));
                 writer.write(line + "\n");
             }
 
             writer.close();
 
             System.out.println(topRow);
-            System.out.println(allItems.stream().map(item -> db.get((int) Math.floor(Math.random()*db.size())).getOrDefault(item, new AtomicInteger(0)).toString()).collect(Collectors.joining(",")));
-            System.out.println(allItems.stream().map(item -> db.get((int) Math.floor(Math.random()*db.size())).getOrDefault(item, new AtomicInteger(0)).toString()).collect(Collectors.joining(",")));
-            System.out.println(allItems.stream().map(item -> db.get((int) Math.floor(Math.random()*db.size())).getOrDefault(item, new AtomicInteger(0)).toString()).collect(Collectors.joining(",")));
+            System.out.println(allItems.stream().map(item -> db.get((int) Math.floor(Math.random()*db.size())).getOrDefault(item, 0).toString()).collect(Collectors.joining(",")));
+            System.out.println(allItems.stream().map(item -> db.get((int) Math.floor(Math.random()*db.size())).getOrDefault(item, 0).toString()).collect(Collectors.joining(",")));
+            System.out.println(allItems.stream().map(item -> db.get((int) Math.floor(Math.random()*db.size())).getOrDefault(item, 0).toString()).collect(Collectors.joining(",")));
 
         } catch (IOException e) {
             System.out.println("FAILURE");
@@ -94,29 +95,36 @@ public class ItemCostScraper {
         System.exit(0);
     }
 
-    public static List<HashMap<DotaItem, AtomicInteger>> from(HashMap<DotaItem, AtomicInteger> build, List<DotaItem> items) {
-        List<HashMap<DotaItem, AtomicInteger>> builds = new ArrayList<>();
+    public static List<HashMap<DotaItem, Integer>> from(HashMap<DotaItem, Integer> build, List<DotaItem> items) {
+        List<HashMap<DotaItem, Integer>> builds = new ArrayList<>();
 
         // get current cost of build
-        int currentCost = build.entrySet().stream().mapToInt(itemCountEntry -> itemCountEntry.getValue().intValue() * itemCountEntry.getKey().getCost()).sum();
+        int currentCost = build.entrySet().stream().mapToInt(itemCountEntry -> itemCountEntry.getValue() * itemCountEntry.getKey().getCost()).sum();
 
-        if(currentCost > 600)
+        if (currentCost > 600)
             return builds;
 
+        List<DotaItem> reducedItems = new ArrayList<>(items);
         // attempt to add an item to the build
         for (DotaItem item : items) {
 
             // item is able to be added to build
             if (item.getCost() + currentCost <= 600) {
 
-                HashMap<DotaItem, AtomicInteger> subBuild = new HashMap<>(build);
+                HashMap<DotaItem, Integer> subBuild = new HashMap<>(build);
+                new HashMap<>(build);
                 if (subBuild.containsKey(item))
-                    subBuild.get(item).getAndIncrement();
-                subBuild.putIfAbsent(item, new AtomicInteger(1));
-                builds.addAll(from(subBuild, items));
-            }else{
+                    subBuild.put(item, subBuild.get(item) + 1);
+                else {
+                    subBuild.put(item, 1);
+                }
+
+                builds.addAll(from(subBuild, reducedItems));
+
+            } else {
                 builds.add(build);
             }
+            reducedItems.remove(item);
         }
         return builds;
     }
