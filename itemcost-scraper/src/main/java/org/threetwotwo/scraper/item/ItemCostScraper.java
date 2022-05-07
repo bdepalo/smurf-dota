@@ -83,7 +83,7 @@ public class ItemCostScraper {
             writer.close();
 
             // write to actual db
-            String url = "jdbc:postgresql://localhost:5432/postgres";
+            String url = "jdbc:postgresql://192.168.1.5:5432/postgres";
             String user = "postgres";
             String password = "docker";
 
@@ -132,8 +132,8 @@ public class ItemCostScraper {
             AtomicInteger index = new AtomicInteger(1);
             startingItems.forEach(item -> {
                 try {
-                    pstmt.setInt(index.getAndIncrement(), build.get(item));
-                } catch (SQLException e) {
+                    pstmt.setInt(index.getAndIncrement(), build.getOrDefault(item,0));
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
