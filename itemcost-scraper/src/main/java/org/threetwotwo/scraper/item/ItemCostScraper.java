@@ -8,6 +8,7 @@ import org.jsoup.select.Elements;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class ItemCostScraper {
                 if (firstLink != null) {
                     String link = firstLink.attr("href");
                     String nameCost = firstLink.attr("title");
-                    String name = StringUtils.substringBetween(nameCost, "", " (");
+                    String name = StringUtils.substringBetween(nameCost, "", " (").replaceAll("'","").replaceAll(" ","_");
                     String cost = StringUtils.substringBetween(nameCost, "(", ")");
                     String imgLink = firstLink.select("img").attr("data-src");
                     return new DotaItem().setCost(Integer.parseInt(cost)).setImageLink(imgLink).setName(name).setItemPageLink(link);
@@ -81,10 +82,33 @@ public class ItemCostScraper {
 
             writer.close();
 
-            System.out.println(topRow);
-            System.out.println(allItems.stream().map(item -> db.get((int) Math.floor(Math.random()*db.size())).getOrDefault(item, 0).toString()).collect(Collectors.joining(",")));
-            System.out.println(allItems.stream().map(item -> db.get((int) Math.floor(Math.random()*db.size())).getOrDefault(item, 0).toString()).collect(Collectors.joining(",")));
-            System.out.println(allItems.stream().map(item -> db.get((int) Math.floor(Math.random()*db.size())).getOrDefault(item, 0).toString()).collect(Collectors.joining(",")));
+            // write to actual db
+            String url = "jdbc:postgresql://localhost:5432/postgres";
+            String user = "postgres";
+            String password = "docker";
+
+            try {
+
+                Connection connection = DriverManager.getConnection(url, user, password);
+
+                connection.prepareStatement("DROP TABLE IF EXISTS starting_builds").execute();
+                String table = allItems.stream().map(x -> x.getName() + " INTEGER").collect(Collectors.joining(","));
+                connection.prepareStatement("CREATE TABLE IF NOT EXISTS starting_builds("+table+")").execute();
+
+                List<DotaItem> finalAllItems = allItems;
+                db.forEach(build -> {
+                    try {
+                        insertSingleBuild(connection, finalAllItems,build);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                connection.close();
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
 
         } catch (IOException e) {
             System.out.println("FAILURE");
@@ -93,6 +117,28 @@ public class ItemCostScraper {
         }
 
         System.exit(0);
+    }
+
+    public static void insertSingleBuild(Connection connection, List<DotaItem> startingItems, HashMap<DotaItem, Integer> build) throws SQLException {
+
+        String topRow = startingItems.stream().map(DotaItem::getName).collect(Collectors.joining(","));
+        String qmark = String.join(",", Collections.nCopies(startingItems.size(), "?"));
+
+            String SQL = "INSERT INTO starting_builds(" + topRow + ") "
+                    + "VALUES(" + qmark + ")";
+
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+
+            AtomicInteger index = new AtomicInteger(1);
+            startingItems.forEach(item -> {
+                try {
+                    pstmt.setInt(index.getAndIncrement(), build.get(item));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            pstmt.executeUpdate();
     }
 
     public static List<HashMap<DotaItem, Integer>> from(HashMap<DotaItem, Integer> build, List<DotaItem> items) {
