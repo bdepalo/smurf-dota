@@ -55,7 +55,7 @@ public class ItemCostScraper {
                 if (firstLink != null) {
                     String link = firstLink.attr("href");
                     String nameCost = firstLink.attr("title");
-                    String name = StringUtils.substringBetween(nameCost, "", " (").replaceAll("'","").replaceAll(" ","_");
+                    String name = StringUtils.substringBetween(nameCost, "", " (").replaceAll("'", "").replaceAll(" ", "_");
                     String cost = StringUtils.substringBetween(nameCost, "(", ")");
                     String imgLink = firstLink.select("img").attr("data-src");
                     return new DotaItem().setCost(Integer.parseInt(cost)).setImageLink(imgLink).setName(name).setItemPageLink(link);
@@ -66,7 +66,8 @@ public class ItemCostScraper {
 
 
             // filter out items with 0 cost and > 600 cost
-            allItems = allItems.stream().filter(x -> x.getCost() <= 600 && x.getCost() > 0).collect(Collectors.toList());
+            allItems = allItems.stream().filter(x -> x.getCost() <= 600 && x.getCost() > 0 && !x.getName().equalsIgnoreCase("town_portal_scroll")
+                    && !x.getName().equalsIgnoreCase("tome_of_knowledge") && !x.getName().equalsIgnoreCase("infused_raindrop")).collect(Collectors.toList());
 
             // do the thing
             List<HashMap<DotaItem, Integer>> db = from(new HashMap<>(), allItems).stream().distinct().collect(Collectors.toList());
@@ -93,12 +94,12 @@ public class ItemCostScraper {
 
                 connection.prepareStatement("DROP TABLE IF EXISTS starting_builds").execute();
                 String table = allItems.stream().map(x -> x.getName() + " INTEGER").collect(Collectors.joining(","));
-                connection.prepareStatement("CREATE TABLE IF NOT EXISTS starting_builds("+table+")").execute();
+                connection.prepareStatement("CREATE TABLE IF NOT EXISTS starting_builds(" + table + ")").execute();
 
                 List<DotaItem> finalAllItems = allItems;
                 db.forEach(build -> {
                     try {
-                        insertSingleBuild(connection, finalAllItems,build);
+                        insertSingleBuild(connection, finalAllItems, build);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -106,7 +107,7 @@ public class ItemCostScraper {
 
                 connection.close();
 
-            }catch (SQLException e){
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
 
@@ -124,21 +125,21 @@ public class ItemCostScraper {
         String topRow = startingItems.stream().map(DotaItem::getName).collect(Collectors.joining(","));
         String qmark = String.join(",", Collections.nCopies(startingItems.size(), "?"));
 
-            String SQL = "INSERT INTO starting_builds(" + topRow + ") "
-                    + "VALUES(" + qmark + ")";
+        String SQL = "INSERT INTO starting_builds(" + topRow + ") "
+                + "VALUES(" + qmark + ")";
 
-            PreparedStatement pstmt = connection.prepareStatement(SQL);
+        PreparedStatement pstmt = connection.prepareStatement(SQL);
 
-            AtomicInteger index = new AtomicInteger(1);
-            startingItems.forEach(item -> {
-                try {
-                    pstmt.setInt(index.getAndIncrement(), build.getOrDefault(item,0));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+        AtomicInteger index = new AtomicInteger(1);
+        startingItems.forEach(item -> {
+            try {
+                pstmt.setInt(index.getAndIncrement(), build.getOrDefault(item, 0));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
-            pstmt.executeUpdate();
+        pstmt.executeUpdate();
     }
 
     public static List<HashMap<DotaItem, Integer>> from(HashMap<DotaItem, Integer> build, List<DotaItem> items) {
