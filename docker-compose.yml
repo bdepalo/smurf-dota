@@ -11,7 +11,16 @@ services:
       POSTGRES_PASSWORD: docker
 
   adminer:
+    container_name: postgres_admin
     image: adminer:latest
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "8322:8080"
+
+  rest-api:
+    container_name: smurf_rest
+    build:
+      context: .
+      dockerfile: rest-api/Dockerfile
+    ports:
+      - "32280:8080"
