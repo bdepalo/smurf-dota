@@ -21,9 +21,16 @@ services:
 
   rest-api:
     container_name: smurf_rest
-    dns: 127.0.0.1
+    dns: 172.31.0.100
     build:
       context: .
       dockerfile: rest-api/Dockerfile
     ports:
       - "32280:8080"
+    networks:
+      pihole_backend:
+        ipv4_address: 172.31.0.3
+
+networks:
+  pihole_backend:
+    external: true
