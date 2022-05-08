@@ -67,7 +67,7 @@ public class ItemCostScraper {
 
             // filter out items with 0 cost and > 600 cost
             allItems = allItems.stream().filter(x -> x.getCost() <= 600 && x.getCost() > 0 && !x.getName().equalsIgnoreCase("town_portal_scroll")
-                    && !x.getName().equalsIgnoreCase("tome_of_knowledge") && !x.getName().equalsIgnoreCase("infused_raindrop")).collect(Collectors.toList());
+                    && !x.getName().equalsIgnoreCase("tome_of_knowledge") && !x.getName().equalsIgnoreCase("infused_raindrops")).collect(Collectors.toList());
 
             // do the thing
             List<HashMap<DotaItem, Integer>> db = from(new HashMap<>(), allItems).stream().distinct().collect(Collectors.toList());
