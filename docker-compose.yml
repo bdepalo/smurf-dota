@@ -31,6 +31,18 @@ services:
       pihole_backend:
         ipv4_address: 172.31.0.3
 
+  frontend:
+    container_name: smurf_frontend
+    dns: 172.31.0.100
+    build:
+      context: frontend
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8008:80"
+    networks:
+      pihole_backend:
+        ipv4_address: 172.31.0.3
+
 networks:
   pihole_backend:
     external: true
