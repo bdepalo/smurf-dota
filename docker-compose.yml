@@ -36,7 +36,7 @@ services:
     dns: 172.31.0.100
     build:
       context: frontend
-      dockerfile: frontend/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8008:80"
     networks:
