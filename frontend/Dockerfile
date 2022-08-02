@@ -4,4 +4,4 @@ COPY . .
 RUN npm install && npm run build
 
 FROM nginx
-COPY --from=build /usr/src/dist /usr/share/nginx/html/smurf
+COPY --from=build /usr/src/dist /usr/share/nginx/html
