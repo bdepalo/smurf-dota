@@ -12,22 +12,24 @@ export default class ItemSelectionComponent extends React.Component<ItemSelectio
     render() {
         return (
             <div>
-                <button onClick={() => {
-                    this.setState(prevState => {
-                        return {max: Math.max(prevState.max - 1, 0)}
-                    })
-                }}>
-                    -
-                </button>
-                <p>{this.props.name}</p>
-                <img src={this.props.imageUrl} alt={this.props.name}/>
-                <button onClick={() => {
-                    this.setState(prevState => {
-                        return {max: prevState.max + 1}
-                    })
-                }}>
-                    +
-                </button>
+                <p>
+                    <button onClick={() => {
+                        this.setState(prevState => {
+                            return {max: Math.max(prevState.max - 1, 0)}
+                        })
+                    }}>
+                        -
+                    </button>
+                    {this.props.name} <img src={this.props.imageUrl} alt={this.props.name} width="50"
+                                           height="50"/> [{this.state.max}]
+                    <button onClick={() => {
+                        this.setState(prevState => {
+                            return {max: prevState.max + 1}
+                        })
+                    }}>
+                        +
+                    </button>
+                </p>
             </div>
         );
     }
