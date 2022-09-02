@@ -1,11 +1,9 @@
 package org.threetwotwo.rest;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +12,10 @@ import java.util.stream.Collectors;
 @CrossOrigin
 @RestController
 public class SmurfRestController {
+
+    private final static String URL = "jdbc:postgresql://192.168.1.5:5432/postgres";
+    private final static String USER = "postgres";
+    private final static String PW = "docker";
 
     private static final List<String> CONSUMABLES = List.of("clarity", "sentry_ward", "smoke_of_deceit",
             "dust_of_appearance", "enchanted_mango", "faerie_fire", "tango", "healing_salve");
@@ -51,9 +53,9 @@ public class SmurfRestController {
         return getRandomStartingBuildWithItemCaps(exclusions);
     }
 
-    @GetMapping("/random/with-cap")
+    @PostMapping("/random/with-cap")
     public Map<String, Integer> getRandomStartingBuildWithItemCaps(
-            @RequestParam Map<String, Integer> itemCaps
+            @RequestBody Map<String, Integer> itemCaps
     ) {
 
         // no item caps were provided
@@ -77,11 +79,7 @@ public class SmurfRestController {
         HashMap<String, Integer> build = new HashMap<>();
 
         try {
-
-            String url = "jdbc:postgresql://192.168.1.5:5432/postgres";
-            String user = "postgres";
-            String password = "docker";
-            Connection connection = DriverManager.getConnection(url, user, password);
+            Connection connection = DriverManager.getConnection(URL, USER, PW);
 
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
