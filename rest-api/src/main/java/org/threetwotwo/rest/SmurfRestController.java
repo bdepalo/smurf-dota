@@ -3,7 +3,6 @@ package org.threetwotwo.rest;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +19,41 @@ public class SmurfRestController {
     private static final List<String> CONSUMABLES = List.of("clarity", "sentry_ward", "smoke_of_deceit",
             "dust_of_appearance", "enchanted_mango", "faerie_fire", "tango", "healing_salve");
     private static final List<String> NORMAL_EXCLUSIONS = List.of("sentry_ward", "smoke_of_deceit", "dust_of_appearance");
+
+//    @GetMapping("/random")
+//    public List<String> getItemList() {
+//
+//        // build query
+//        String query = "SELECT * FROM starting_builds ORDER BY random() LIMIT 1";
+//
+//        // query database
+//        List<String> items = new ArrayList<>();
+//
+//        try {
+//            Connection connection = DriverManager.getConnection(URL, USER, PW);
+//
+//            Statement statement = connection.createStatement();
+//            ResultSet rs = statement.executeQuery(query);
+//            ResultSetMetaData metaData = rs.getMetaData();
+//
+//            rs.next();
+//            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+//                String itemName = metaData.getColumnName(i);
+//                int itemCount = rs.getInt(i);
+//                if (itemCount > 0)
+//                    items.put(itemName, itemCount);
+//            }
+//
+//            statement.close();
+//            connection.close();
+//
+//
+//        } catch (SQLException e) {
+//            throw new RuntimeException("Error when querying the database", e);
+//        }
+//
+//        return items;
+//    }
 
     @GetMapping("/random")
     public Map<String, Integer> getRandomStartingBuild() {
@@ -47,15 +81,15 @@ public class SmurfRestController {
     ) {
 
         // build map of excluded items with cap of 0
-        HashMap<String, Integer> exclusions = new HashMap<>();
-        excludedItems.forEach(item -> exclusions.put(item, 0));
+        HashMap<String, List<Integer>> exclusions = new HashMap<>();
+        excludedItems.forEach(item -> exclusions.put(item, List.of(0,0)));
 
         return getRandomStartingBuildWithItemCaps(exclusions);
     }
 
     @PostMapping("/random/with-cap")
     public Map<String, Integer> getRandomStartingBuildWithItemCaps(
-            @RequestBody Map<String, Integer> itemCaps
+            @RequestBody Map<String, List<Integer>> itemCaps
     ) {
 
         // no item caps were provided
