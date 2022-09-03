@@ -1,11 +1,10 @@
 import * as React from "react";
 import ItemSelectionInterface from '../interfaces/ItemSelectionInterface'
 
-export default class ItemSelectionComponent extends React.Component<ItemSelectionInterface, { max: number }> {
+export default class ItemSelectionComponent extends React.Component<ItemSelectionInterface, {}> {
 
     constructor(props: ItemSelectionInterface) {
         super(props);
-        this.state = {max: 0};
     }
 
 
@@ -14,18 +13,14 @@ export default class ItemSelectionComponent extends React.Component<ItemSelectio
             <div>
                 <p>
                     <button onClick={() => {
-                        this.setState(prevState => {
-                            return {max: Math.max(prevState.max - 1, 0)}
-                        })
+                        this.props.minusMax(this.props.name);
                     }}>
                         -
                     </button>
                     {this.props.name} <img src={this.props.imageUrl} alt={this.props.name} width="50"
-                                           height="50"/> [{this.state.max}]
+                                           height="50"/> [{this.props.max}]
                     <button onClick={() => {
-                        this.setState(prevState => {
-                            return {max: prevState.max + 1}
-                        })
+                        this.props.plusMax(this.props.name);
                     }}>
                         +
                     </button>
