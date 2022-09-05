@@ -98,7 +98,7 @@ public class SmurfRestController {
 
         // build where clause
         String where = itemCaps.entrySet().stream().map(
-                entry -> entry.getKey() + " >= " + entry.getValue().get(0) + " AND " entry.getKey() + " <= " + entry.getValue().get(1)+
+                entry -> entry.getKey() + " >= " + entry.getValue().get(0) + " AND " + entry.getKey() + " <= " + entry.getValue().get(1)
         ).collect(Collectors.joining(" AND "));
 
         // build full query
