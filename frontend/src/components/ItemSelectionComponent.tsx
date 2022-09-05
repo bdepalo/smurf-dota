@@ -51,7 +51,6 @@ export const ItemMaxMinus = styled.div`
 
 export default class ItemSelectionComponent extends React.Component<ItemSelectionInterface, {}> {
 
-
     constructor(props: ItemSelectionInterface) {
         super(props);
     }

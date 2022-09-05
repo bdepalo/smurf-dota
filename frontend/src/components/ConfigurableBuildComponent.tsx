@@ -11,7 +11,6 @@ export default class ConfigurableBuildComponent extends React.Component<Configur
     constructor(props: ConfigurableBuildInterface) {
         super(props);
 
-
         this.state = {build: "none", conf: Map({"clarity": [1, 2], "iron_branch": [0, 3]})};
         this.plusMin = this.plusMin.bind(this);
         this.plusMax = this.plusMax.bind(this);
