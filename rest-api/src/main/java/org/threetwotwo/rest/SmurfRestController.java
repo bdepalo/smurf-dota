@@ -10,50 +10,11 @@ import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
-public class SmurfRestController {
-
-    private final static String URL = "jdbc:postgresql://192.168.1.5:5432/postgres";
-    private final static String USER = "postgres";
-    private final static String PW = "docker";
+public class SmurfRestController extends AbstractSmurfController {
 
     private static final List<String> CONSUMABLES = List.of("clarity", "sentry_ward", "smoke_of_deceit",
             "dust_of_appearance", "enchanted_mango", "faerie_fire", "tango", "healing_salve");
     private static final List<String> NORMAL_EXCLUSIONS = List.of("sentry_ward", "smoke_of_deceit", "dust_of_appearance");
-
-//    @GetMapping("/random")
-//    public List<String> getItemList() {
-//
-//        // build query
-//        String query = "SELECT * FROM starting_builds ORDER BY random() LIMIT 1";
-//
-//        // query database
-//        List<String> items = new ArrayList<>();
-//
-//        try {
-//            Connection connection = DriverManager.getConnection(URL, USER, PW);
-//
-//            Statement statement = connection.createStatement();
-//            ResultSet rs = statement.executeQuery(query);
-//            ResultSetMetaData metaData = rs.getMetaData();
-//
-//            rs.next();
-//            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-//                String itemName = metaData.getColumnName(i);
-//                int itemCount = rs.getInt(i);
-//                if (itemCount > 0)
-//                    items.put(itemName, itemCount);
-//            }
-//
-//            statement.close();
-//            connection.close();
-//
-//
-//        } catch (SQLException e) {
-//            throw new RuntimeException("Error when querying the database", e);
-//        }
-//
-//        return items;
-//    }
 
     @GetMapping("/random")
     public Map<String, Integer> getRandomStartingBuild() {
@@ -82,7 +43,7 @@ public class SmurfRestController {
 
         // build map of excluded items with cap of 0
         HashMap<String, List<Integer>> exclusions = new HashMap<>();
-        excludedItems.forEach(item -> exclusions.put(item, List.of(0,0)));
+        excludedItems.forEach(item -> exclusions.put(item, List.of(0, 0)));
 
         return getRandomStartingBuildWithItemCaps(exclusions);
     }
@@ -106,35 +67,5 @@ public class SmurfRestController {
 
         // query database
         return queryDatabase(query);
-    }
-
-    private Map<String, Integer> queryDatabase(String query) {
-
-        HashMap<String, Integer> build = new HashMap<>();
-
-        try {
-            Connection connection = DriverManager.getConnection(URL, USER, PW);
-
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(query);
-            ResultSetMetaData metaData = rs.getMetaData();
-
-            rs.next();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                String itemName = metaData.getColumnName(i);
-                int itemCount = rs.getInt(i);
-                if (itemCount > 0)
-                    build.put(itemName, itemCount);
-            }
-
-            statement.close();
-            connection.close();
-
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error when querying the database", e);
-        }
-
-        return build;
     }
 }
