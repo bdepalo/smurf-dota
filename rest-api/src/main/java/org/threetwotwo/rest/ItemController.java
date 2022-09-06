@@ -10,10 +10,10 @@ import java.util.List;
 @RestController
 public class ItemController extends AbstractSmurfController {
 
-    @GetMapping("/item-names")
-    public List<String> getItemNames() {
+    @GetMapping("/items")
+    public List<Item> getItemNames() {
 
-        return queryDatabaseList("SELECT name FROM items WHERE cost <= 600 AND cost > 0 AND name NOT IN " +
+        return queryDatabaseList("SELECT * FROM items WHERE cost <= 600 AND cost > 0 AND name NOT IN " +
                 "('Tome_of_Knowledge','Town_Portal_Scroll','Infused_Raindrops')");
     }
 }

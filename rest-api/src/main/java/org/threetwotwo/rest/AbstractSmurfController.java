@@ -40,7 +40,7 @@ public abstract class AbstractSmurfController {
         return build;
     }
 
-    public List<String> queryDatabaseList(String query) {
+    public List<Item> queryDatabaseList(String query) {
 
         try {
             Connection connection = DriverManager.getConnection(URL, USER, PW);
@@ -48,14 +48,60 @@ public abstract class AbstractSmurfController {
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
 
-            String[] array = (String[]) rs.getArray(0).getArray();
+            ArrayList<Item> itemNames = new ArrayList<>();
+            while(rs.next()){
+                try {
+                    itemNames.add(createItem(rs));
+                }catch (SQLException e){
+                    System.err.println(e);
+                }
+            }
 
             statement.close();
             connection.close();
 
-            return List.of(array);
+            return itemNames;
         } catch (SQLException e) {
             throw new RuntimeException("Error when querying the database", e);
         }
+    }
+
+    protected class Item{
+        private final String name;
+        private final int cost;
+        private final String image;
+        private final String link;
+
+        public Item(String name, int cost, String image, String link) {
+            this.name = name;
+            this.cost = cost;
+            this.image = image;
+            this.link = link;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getCost() {
+            return cost;
+        }
+
+        public String getImage() {
+            return image;
+        }
+
+        public String getLink() {
+            return link;
+        }
+    }
+
+    private Item createItem(ResultSet rs) throws SQLException{
+        return new Item(
+          rs.getString("name"),
+          rs.getInt("cost"),
+          rs.getString("image"),
+          rs.getString("link")
+        );
     }
 }
