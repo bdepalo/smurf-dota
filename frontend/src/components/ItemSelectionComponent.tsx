@@ -100,6 +100,7 @@ export default class ItemSelectionComponent extends React.Component<ItemSelectio
                         -
                     </button>
                 </ItemMaxMinus>
+                <hr/>
             </ItemSelection>
         );
     }

@@ -1,48 +1,44 @@
 import * as React from "react";
 import ConfigurableBuildInterface from "../interfaces/ConfigurableBuildInterface";
 import ItemSelectionComponent from "../components/ItemSelectionComponent";
+import DotaItem from "../interfaces/DotaItem";
 
 const {Map} = require('immutable');
 
-export default class ConfigurableBuildComponent extends React.Component<ConfigurableBuildInterface, { build: string, conf: Map<string, number[]> }> {
+export default class ConfigurableBuildComponent extends React.Component<ConfigurableBuildInterface, { build: string, conf: Map<string, number[]>, items: DotaItem[] }> {
 
     static defaultMinMax = [0, 6];
 
     constructor(props: ConfigurableBuildInterface) {
         super(props);
 
-        this.state = {build: "none", conf: Map({"clarity": [1, 2], "iron_branch": [0, 3]})};
+        this.state = {build: "none", conf: Map({}), items: []};
+
         this.plusMin = this.plusMin.bind(this);
         this.plusMax = this.plusMax.bind(this);
         this.minusMin = this.minusMin.bind(this);
         this.minusMax = this.minusMax.bind(this);
+
+        this.fetchItems();
     }
 
     render() {
 
+        let items: DotaItem[] = this.state.items;
+
         return (
             <div>
                 <h3>{this.props.header}</h3>
-                <ItemSelectionComponent
-                    imageUrl="https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1240w,f_auto,q_auto:best/newscms/2019_06/2746941/190208-stock-money-fanned-out-ew-317p.jpg"
-                    name="sentry_ward" plusMin={this.plusMin}
-                    plusMax={this.plusMax} minusMin={this.minusMin} minusMax={this.minusMax}
-                    items={this.state.conf}/>
-                <ItemSelectionComponent
-                    imageUrl="https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1240w,f_auto,q_auto:best/newscms/2019_06/2746941/190208-stock-money-fanned-out-ew-317p.jpg"
-                    name="iron_branch" plusMin={this.plusMin}
-                    plusMax={this.plusMax} minusMin={this.minusMin} minusMax={this.minusMax}
-                    items={this.state.conf}/>
-                <ItemSelectionComponent
-                    imageUrl="https://assets.entrepreneur.com/content/3x2/2000/1612466646-Affiliate-2000x1334.jpg?auto=webp&quality=95&crop=16:9&width=675"
-                    name="clarity" plusMin={this.plusMin}
-                    plusMax={this.plusMax} minusMin={this.minusMin} minusMax={this.minusMax}
-                    items={this.state.conf}/>
-                <ItemSelectionComponent
-                    imageUrl="https://assets.entrepreneur.com/content/3x2/2000/1612466646-Affiliate-2000x1334.jpg?auto=webp&quality=95&crop=16:9&width=675"
-                    name="quelling_blade" plusMin={this.plusMin}
-                    plusMax={this.plusMax} minusMin={this.minusMin} minusMax={this.minusMax}
-                    items={this.state.conf}/>
+                {items.map(
+                    ({name, cost, image, link}) => (
+                        <ItemSelectionComponent
+                            key={name}
+                            imageUrl={image}
+                            name={name} plusMin={this.plusMin}
+                            plusMax={this.plusMax} minusMin={this.minusMin} minusMax={this.minusMax}
+                            items={this.state.conf}/>
+                    )
+                )}
                 <button onClick={() => this.getConfiguredRandom().then(res => {
                         this.setState(() => ({build: res}))
                     }
@@ -56,7 +52,27 @@ export default class ConfigurableBuildComponent extends React.Component<Configur
         );
     }
 
+    fetchItems(): void {
+
+        this.getItems().then(res => {
+            this.setState({items: JSON.parse(res)});
+        });
+
+        console.log(this.state.items)
+    }
+
+    getItems(): Promise<string> {
+        // return fetch("http://127.0.0.1:8080/items", {
+        return fetch("https://rollterps.duckdns.org/smurf/api/items", {
+            referrerPolicy: "origin-when-cross-origin",
+            mode: "cors",
+            method: 'GET'
+        })
+            .then(res => res.text())
+    }
+
     getConfiguredRandom(): Promise<string> {
+        // return fetch("http://127.0.0.1:8080/random/with-cap", {
         return fetch("https://rollterps.duckdns.org/smurf/api/random/with-cap", {
             referrerPolicy: "origin-when-cross-origin",
             mode: "cors",
