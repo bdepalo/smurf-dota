@@ -55,7 +55,6 @@ export default class ItemSelectionComponent extends React.Component<ItemSelectio
         super(props);
     }
 
-
     render() {
         return (
             <ItemSelection>
@@ -63,7 +62,7 @@ export default class ItemSelectionComponent extends React.Component<ItemSelectio
                     {this.props.name}
                 </ItemName>
                 <ItemPicture>
-                    <img src={this.props.imageUrl} alt={this.props.name} width="50"
+                    <img src={this.props.imageUrl} referrerPolicy="no-referrer" alt={this.props.name} width="100"
                          height="50"/>
                 </ItemPicture>
                 <ItemMin>
