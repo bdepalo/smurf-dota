@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "types": [
+      "pinia-plugin-persist"
+    ],
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["vite.config.ts"]
+}
