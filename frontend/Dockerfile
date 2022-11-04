@@ -1,7 +1,8 @@
-FROM node:14 AS build
+FROM node:16
 WORKDIR /usr/src
 COPY . .
-RUN npm install && npm run build
+RUN npm install
 
-FROM nginx
-COPY --from=build /usr/src/dist /usr/share/nginx/html
+EXPOSE 30322
+
+ENTRYPOINT ["npm","run","dev"]
