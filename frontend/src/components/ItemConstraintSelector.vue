@@ -22,7 +22,7 @@
       <button @click="$emit('max+',item.name)" class="bg-blue">
         +
       </button>
-      <div class="text-gray-dark font-extrabold text-xl">{{ constraint.max }}</div>
+      <div class="text-gray-dark font-extrabold text-xl">{{ constraint?.max }}</div>
       <button @click="$emit('max-',item.name)" class="bg-blue">
         -
       </button>

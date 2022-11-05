@@ -1,12 +1,13 @@
 <template>
   <div class="py-3 flex flex-col">
     <div class="flex justify-center">
-      <img src="../../public/322.PNG" class="max-w-md md:max-w-xl rounded-4xl"/>
+      322
+<!--      <img src="./assets/322.PNG" class="max-w-md md:max-w-xl rounded-4xl"/>-->
     </div>
     <generate-build @build="getBuild"/>
     <div class="flex flex-row flex-wrap gap-3 justify-center">
       <item-constraint-selector v-for="item in itemStore.items" :item="item"
-                                :constraint="itemStore.constraints.find(x => item.name === x.name)"
+                                :constraint="itemStore?.constraints?.find(x => item.name === x.name) ?? {min: 0, max: 6, name: item.name}"
                                 @max-="minusMax" @max+="plusMax" @min-="minusMin" @min+="plusMin"/>
     </div>
   </div>

@@ -2,7 +2,7 @@
   <item-constraint-canvas/>
 </template>
 
-<script>
+<script lang="ts">
 import ItemConstraintCanvas from "../components/ItemConstraintCanvas.vue"
 
 export default {
