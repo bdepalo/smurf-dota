@@ -4,8 +4,8 @@ import ItemConstraint from "../models/ItemConstraint";
 
 export interface ItemsState {
   items: DotaItem[]
-  constraints: ItemConstraint[]
-  build: string
+  constraints?: ItemConstraint[]
+  build?: string
 }
 
 export const useItemStore = defineStore("items", {
@@ -40,9 +40,9 @@ export const useItemStore = defineStore("items", {
 
       this.items.push(item);
 
-      if (this.constraints.find(x => x.name == item.name)) {
+      if (this.constraints?.find(x => x.name == item.name)) {
       } else {
-        this.constraints.push({
+        this.constraints?.push({
           name: item.name,
           min: 0,
           max: 6
@@ -50,7 +50,7 @@ export const useItemStore = defineStore("items", {
       }
     },
     plusMin(itemName: string) {
-      const constraint = this.constraints.find(item => item.name === itemName);
+      const constraint = this.constraints?.find(item => item.name === itemName);
 
       if (constraint) {
         constraint.min++;
@@ -58,21 +58,21 @@ export const useItemStore = defineStore("items", {
       }
     },
     plusMax(itemName: string) {
-      const constraint = this.constraints.find(item => item.name === itemName);
+      const constraint = this.constraints?.find(item => item.name === itemName);
 
       if (constraint) {
         constraint.max++;
       }
     },
     minusMin(itemName: string) {
-      const constraint = this.constraints.find(item => item.name === itemName);
+      const constraint = this.constraints?.find(item => item.name === itemName);
 
       if (constraint) {
         constraint.min = Math.max(constraint.min - 1, 0);
       }
     },
     minusMax(itemName: string) {
-      const constraint = this.constraints.find(item => item.name === itemName);
+      const constraint = this.constraints?.find(item => item.name === itemName);
 
       if (constraint) {
         constraint.min = Math.max(Math.min(constraint.max - 1, constraint.min), 0)
@@ -83,7 +83,7 @@ export const useItemStore = defineStore("items", {
 
       // convert to correct (dumb?) format for REST api
       let shipIt: Map<string, number[]> = new Map();
-      this.constraints.forEach((constraint) => shipIt.set(constraint.name, [constraint.min, constraint.max]))
+      this.constraints?.forEach((constraint) => shipIt.set(constraint.name, [constraint.min, constraint.max]))
 
       this.build = await fetch("https://rollterps.duckdns.org/smurf/api/random/with-cap", {
         referrerPolicy: "origin-when-cross-origin",
