@@ -3,15 +3,16 @@ import Home from "../views/Home.vue";
 import About from "../views/About.vue"
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/*",
+    path: "/smurf/",
     name: "Home",
     component: Home
   },
-  // {
-  //   path: "/*",
-  //   name: "About",
-  //   component: About
-  // }
+  {
+    path: "/smurf/about",
+    name: "About",
+    component: About
+  },
+  {path: "/smurf/:catchAll(.*)", redirect: "/smurf/about"}
 ]
 const router = createRouter({
   history: createWebHistory(),
