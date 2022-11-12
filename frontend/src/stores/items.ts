@@ -92,7 +92,7 @@ export const useItemStore = defineStore("items", {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(shipIt)
+        body: JSON.stringify(Object.fromEntries(shipIt))
       })
         .then(res => res.text())
     },
